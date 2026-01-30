@@ -1,7 +1,6 @@
 import React from 'react';
 import Hero from './components/Hero';
 import Gallery from './components/Gallery';
-import AICustomizer from './components/AICustomizer';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 
@@ -27,7 +26,6 @@ const App: React.FC = () => {
       <main>
         <Hero />
         <Gallery />
-        <AICustomizer />
         <Contact />
       </main>
 

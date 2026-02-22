@@ -54,11 +54,19 @@ const Hero: React.FC = () => {
     setImageLoaded(false);
   };
 
+  const isNoToggleTarget = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) return false;
+    return Boolean(target.closest('[data-hero-no-toggle], a, button'));
+  };
+
   return (
     <div
       ref={containerRef}
       className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden"
-      onClick={handleHeroClick}
+      onClickCapture={(e) => {
+        if (isNoToggleTarget(e.target)) return;
+        handleHeroClick();
+      }}
       onKeyDown={(e) => e.key === 'Enter' && handleHeroClick()}
       role="button"
       tabIndex={0}
@@ -81,8 +89,8 @@ const Hero: React.FC = () => {
       {/* Animated flame – visible only when lit */}
       {isLit && flameLayout && <Flame layout={flameLayout} />}
 
-      {/* Content – stop propagation so clicking CTA/link doesn't light the candle */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto" onClick={(e) => e.stopPropagation()}>
+      {/* Content */}
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto cursor-pointer">
         <span className="block text-gold-400 text-lg md:text-xl font-bold tracking-[0.2em] uppercase mb-4 animate-fade-in-down">
           Hand-poured Luxury
         </span>
@@ -96,6 +104,8 @@ const Hero: React.FC = () => {
           <a 
             href="#gallery" 
             className="inline-block px-10 py-4 border-2 border-white text-white font-bold tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300"
+            data-hero-no-toggle
+            onClick={(e) => e.stopPropagation()}
           >
             Explore Collection
           </a>
@@ -103,7 +113,7 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce z-10 text-white/70" onClick={(e) => e.stopPropagation()}>
+      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce z-10 text-white/70" data-hero-no-toggle onClick={(e) => e.stopPropagation()}>
         <ArrowDown size={32} />
       </div>
     </div>

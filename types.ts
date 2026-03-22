@@ -1,9 +1,11 @@
 export interface Candle {
   id: string;
   name: string;
+  artist: string;
+  scent: string;
   description: string;
   image: string;
-  audioSrc: string;
+  spotifyTrackId: string;
   price: number;
   scentProfile: string[];
 }

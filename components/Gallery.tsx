@@ -1,8 +1,12 @@
 import React from 'react';
-import { CANDLES, CATEGORY_META } from '../constants';
+import { useCandles } from '../lib/useCandles';
+import { useCategoryMeta } from '../lib/useCategoryMeta';
 import CategoryCarousel from './CategoryCarousel';
 
 const Gallery: React.FC = () => {
+  const { candles } = useCandles();
+  const { categoryMeta } = useCategoryMeta();
+
   return (
     <section id="gallery" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto">
@@ -19,11 +23,11 @@ const Gallery: React.FC = () => {
 
         {/* Four category carousels */}
         <div className="space-y-16">
-          {CATEGORY_META.map(meta => (
+          {categoryMeta.map(meta => (
             <CategoryCarousel
               key={meta.name}
               meta={meta}
-              candles={CANDLES.filter(c => c.category === meta.name)}
+              candles={candles.filter(c => c.category === meta.name)}
             />
           ))}
         </div>

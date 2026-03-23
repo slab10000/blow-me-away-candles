@@ -5,6 +5,7 @@ import Gallery from './components/Gallery';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import CategoryPage from './components/CategoryPage';
+import FlameCursor from './components/FlameCursor';
 
 const HomePage: React.FC = () => {
   React.useEffect(() => {
@@ -45,12 +46,15 @@ const HomePage: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/category/:categoryName" element={<CategoryPage />} />
-    </Routes>
-  </BrowserRouter>
+  <>
+    <FlameCursor />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/category/:categoryName" element={<CategoryPage />} />
+      </Routes>
+    </BrowserRouter>
+  </>
 );
 
 export default App;

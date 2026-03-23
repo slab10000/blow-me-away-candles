@@ -6,6 +6,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import CategoryPage from './components/CategoryPage';
 import FlameCursor from './components/FlameCursor';
+import AdminApp from './admin/AdminApp';
 
 const HomePage: React.FC = () => {
   React.useEffect(() => {
@@ -52,6 +53,7 @@ const App: React.FC = () => (
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/category/:categoryName" element={<CategoryPage />} />
+        <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
     </BrowserRouter>
   </>

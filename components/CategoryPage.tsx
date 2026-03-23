@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { CANDLES, CATEGORY_META } from '../constants';
+import { useCandles } from '../lib/useCandles';
+import { useCategoryMeta } from '../lib/useCategoryMeta';
 import { ScentCategory } from '../types';
 import CandleCard from './CandleCard';
 import Footer from './Footer';
@@ -9,6 +10,8 @@ import Footer from './Footer';
 const CategoryPage: React.FC = () => {
   const { categoryName } = useParams<{ categoryName: string }>();
   const navigate = useNavigate();
+  const { candles } = useCandles();
+  const { categoryMeta } = useCategoryMeta();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -19,8 +22,8 @@ const CategoryPage: React.FC = () => {
       ? (categoryName.charAt(0).toUpperCase() + categoryName.slice(1).toLowerCase()) as ScentCategory
       : null;
 
-  const meta = CATEGORY_META.find(m => m.name === normalizedName);
-  const candles = CANDLES.filter(c => c.category === normalizedName);
+  const meta = categoryMeta.find(m => m.name === normalizedName);
+  const filtered = candles.filter(c => c.category === normalizedName);
 
   if (!meta) {
     return (
@@ -69,7 +72,7 @@ const CategoryPage: React.FC = () => {
             <div className="h-1 w-20 bg-gold-500 rounded-full mb-4" />
             <p className="text-xl text-gray-600 font-light max-w-xl">{meta.subtitle}</p>
             <p className="mt-3 text-sm text-gray-400 uppercase tracking-widest font-bold">
-              {candles.length} candle{candles.length !== 1 ? 's' : ''}
+              {filtered.length} candle{filtered.length !== 1 ? 's' : ''}
             </p>
           </div>
         </div>
@@ -78,7 +81,7 @@ const CategoryPage: React.FC = () => {
         <div className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
-              {candles.map(candle => (
+              {filtered.map(candle => (
                 <CandleCard key={candle.id} candle={candle} />
               ))}
             </div>

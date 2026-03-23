@@ -16,3 +16,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #bd95cf;
 }
+
+/* Hide scrollbar on carousel tracks */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

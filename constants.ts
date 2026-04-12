@@ -1,4 +1,11 @@
-import { Candle } from './types';
+import { Candle, CategoryMeta } from './types';
+
+export const CATEGORY_META: CategoryMeta[] = [
+  { name: 'Fresh',  subtitle: 'Bright, airy, and sun-drenched — for every kind of good day.' },
+  { name: 'Warm',   subtitle: 'Cozy, indulgent, and deeply comforting — like a hug in a jar.' },
+  { name: 'Floral', subtitle: 'Soft petals and romantic notes — beautifully timeless.' },
+  { name: 'Earthy', subtitle: 'Grounded, smoky, and mysterious — nature distilled.' },
+];
 
 export const CANDLES: Candle[] = [
   {
@@ -11,6 +18,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '4yNk9iz9WVJikRFle3XEvn',
     price: 32,
     scentProfile: ['Citrus', 'Peach', 'Mango'],
+    category: 'Fresh',
   },
   {
     id: 'c2',
@@ -22,6 +30,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '5FChOu6NfR5w7YLgDmXXnC',
     price: 30,
     scentProfile: ['Sea Salt', 'Fresh Air', 'Coconut'],
+    category: 'Fresh',
   },
   {
     id: 'c3',
@@ -33,6 +42,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '4x1dWc1GgAfC04GcTlllax',
     price: 34,
     scentProfile: ['Vanilla', 'Pumpkin', 'Marshmallow'],
+    category: 'Warm',
   },
   {
     id: 'c4',
@@ -44,6 +54,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '2d3QlXE6FXFDeodiS66yjM',
     price: 32,
     scentProfile: ['Coconut', 'Mango', 'Tropical'],
+    category: 'Fresh',
   },
   {
     id: 'c5',
@@ -55,6 +66,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '1l4iQsOZ5sOXZPMQLvouaB',
     price: 30,
     scentProfile: ['Sea Salt', 'Fresh Air', 'Driftwood'],
+    category: 'Fresh',
   },
   {
     id: 'c6',
@@ -66,6 +78,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '3bpxXrU2ZtpmN1tyVmaO6S',
     price: 28,
     scentProfile: ['Citrus', 'Berry', 'Sweet'],
+    category: 'Fresh',
   },
   {
     id: 'c7',
@@ -77,6 +90,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '7xrgjsuZwFtv25ELEMKkpl',
     price: 32,
     scentProfile: ['Apple', 'Cinnamon', 'Brown Sugar'],
+    category: 'Warm',
   },
   {
     id: 'c8',
@@ -88,6 +102,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '0zGLlXbHlrAyBN1x6sY0rb',
     price: 34,
     scentProfile: ['Rose', 'Floral', 'Musk'],
+    category: 'Floral',
   },
   {
     id: 'c9',
@@ -99,6 +114,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '2qSkIjg1o9h3YT9RAgYN75',
     price: 30,
     scentProfile: ['Coffee', 'Espresso', 'Vanilla'],
+    category: 'Warm',
   },
   {
     id: 'c10',
@@ -110,6 +126,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '5jQI2r1RdgtuT8S3iG8zFC',
     price: 32,
     scentProfile: ['Lavender', 'Herbal', 'Floral'],
+    category: 'Floral',
   },
   {
     id: 'c11',
@@ -121,6 +138,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '1OubIZ0ARYCUq5kceYUQiO',
     price: 34,
     scentProfile: ['Peach', 'Cherry Blossom', 'Musk'],
+    category: 'Floral',
   },
   {
     id: 'c12',
@@ -132,6 +150,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '1FDYlHFZpKDOBjp2TaKfP6',
     price: 32,
     scentProfile: ['Mango', 'Coconut', 'Tropical'],
+    category: 'Fresh',
   },
   {
     id: 'c13',
@@ -143,6 +162,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '69xOrL71OeGz5fqXFTnJ5L',
     price: 34,
     scentProfile: ['Cedarwood', 'Autumn Leaves', 'Smoke'],
+    category: 'Earthy',
   },
   {
     id: 'c14',
@@ -154,6 +174,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '4SqWKzw0CbA05TGszDgMlc',
     price: 32,
     scentProfile: ['Cinnamon', 'Vanilla', 'Brown Sugar'],
+    category: 'Warm',
   },
   {
     id: 'c15',
@@ -165,6 +186,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '6EMynpZ10GVcwVqiLZj6Ye',
     price: 36,
     scentProfile: ['Champagne', 'Citrus', 'White Flowers'],
+    category: 'Fresh',
   },
   {
     id: 'c16',
@@ -176,6 +198,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '5ZCc9E9FsPlxFsLDVcgLsK',
     price: 34,
     scentProfile: ['Musk', 'Bergamot', 'Cedar'],
+    category: 'Earthy',
   },
   {
     id: 'c17',
@@ -187,6 +210,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '4VywXu6umkIQ2OS0m1I79y',
     price: 30,
     scentProfile: ['Blueberry', 'Vanilla', 'Warm Spice'],
+    category: 'Warm',
   },
   {
     id: 'c18',
@@ -198,6 +222,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '2QjOHCTQ1Jl3zawyYOpxh6',
     price: 32,
     scentProfile: ['Cashmere', 'Sandalwood', 'Warm Spice'],
+    category: 'Warm',
   },
   {
     id: 'c19',
@@ -209,6 +234,7 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '2jdAk8ATWIL3dwT47XpRfu',
     price: 36,
     scentProfile: ['Cedarwood', 'Lavender', 'Musk'],
+    category: 'Earthy',
   },
   {
     id: 'c20',
@@ -220,5 +246,6 @@ export const CANDLES: Candle[] = [
     spotifyTrackId: '6wfl32rXBpn5MC3ZzZKafM',
     price: 32,
     scentProfile: ['Berry', 'Tulip', 'Fresh Floral'],
+    category: 'Floral',
   },
 ];

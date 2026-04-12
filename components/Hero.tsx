@@ -62,7 +62,7 @@ const Hero: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden"
+      className="flame-zone relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden"
       onClickCapture={(e) => {
         if (isNoToggleTarget(e.target)) return;
         handleHeroClick();

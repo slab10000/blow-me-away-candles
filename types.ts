@@ -1,3 +1,10 @@
+export type ScentCategory = 'Fresh' | 'Warm' | 'Floral' | 'Earthy';
+
+export interface CategoryMeta {
+  name: ScentCategory;
+  subtitle: string;
+}
+
 export interface Candle {
   id: string;
   name: string;
@@ -8,6 +15,7 @@ export interface Candle {
   spotifyTrackId: string;
   price: number;
   scentProfile: string[];
+  category: ScentCategory;
 }
 
 export interface CustomScentRequest {

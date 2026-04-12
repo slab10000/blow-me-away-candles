@@ -5,6 +5,8 @@ export default {
     "./*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
     "./services/**/*.{js,ts,jsx,tsx}",
+    "./admin/**/*.{js,ts,jsx,tsx}",
+    "./lib/**/*.{js,ts,jsx,tsx}",
     "./App.tsx",
   ],
   theme: {

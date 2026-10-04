@@ -14,6 +14,7 @@ export interface Candle {
   image: string;
   spotifyTrackId: string;
   price: number;
+  stock: number;
   scentProfile: string[];
   category: ScentCategory;
 }

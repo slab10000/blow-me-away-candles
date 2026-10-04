@@ -1,10 +1,10 @@
 import React from 'react';
-import { useCandles } from '../lib/useCandles';
+import { useCart } from '../lib/CartContext';
 import { useCategoryMeta } from '../lib/useCategoryMeta';
 import CategoryCarousel from './CategoryCarousel';
 
 const Gallery: React.FC = () => {
-  const { candles } = useCandles();
+  const { candles } = useCart();
   const { categoryMeta } = useCategoryMeta();
 
   return (

@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useCandles } from '../lib/useCandles';
+import { useCart } from '../lib/CartContext';
 import { useCategoryMeta } from '../lib/useCategoryMeta';
 import { ScentCategory } from '../types';
 import CandleCard from './CandleCard';
 import Footer from './Footer';
+import StoreNav from './StoreNav';
 
 const CategoryPage: React.FC = () => {
   const { categoryName } = useParams<{ categoryName: string }>();
   const navigate = useNavigate();
-  const { candles, loading: catalogLoading } = useCandles();
+  const { candles, loading: catalogLoading } = useCart();
   const { categoryMeta, loading: categoriesLoading } = useCategoryMeta();
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const CategoryPage: React.FC = () => {
   const meta = categoryMeta.find(m => m.name === normalizedName);
   const filtered = candles.filter(c => c.category === normalizedName);
 
-  if (categoriesLoading || catalogLoading) return <p role="status" className="pt-32 text-center text-gray-500">Loading the collection…</p>;
+  if (categoriesLoading || catalogLoading) return <div className="min-h-screen bg-white"><StoreNav /><p role="status" className="pt-32 text-center text-gray-500">Loading the collection…</p></div>;
 
   if (!meta) {
     return (
@@ -38,23 +39,7 @@ const CategoryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[#829cc1] backdrop-blur-md border-b border-[#829cc1] shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <a href="/" className="font-serif text-2xl font-bold text-gray-900 tracking-tighter">
-              Blow Me Away
-            </a>
-            <div className="hidden md:flex space-x-8">
-              <a href="/#gallery" className="text-gray-900 hover:text-gold-600 px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors">
-                Collection
-              </a>
-              <a href="/#contact" className="text-gray-900 hover:text-gold-600 px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors">
-                Contact
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <StoreNav />
 
       <main className="pt-20">
         {/* Category header */}

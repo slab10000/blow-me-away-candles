@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid #566f93;
+    outline-offset: 3px;
+  }
+}
+
 /* Custom scrollbar for webkit */
 ::-webkit-scrollbar {
   width: 8px;

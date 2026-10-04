@@ -15,6 +15,7 @@ const empty = (): Omit<Candle, 'id'> => ({
   image: '',
   spotifyTrackId: '',
   price: 0,
+  stock: 1,
   scentProfile: [],
   category: 'Fresh',
 });
@@ -45,7 +46,7 @@ const CandleForm: React.FC = () => {
     supabase.from('candles').select('*').eq('id', id!).single().then(({ data }) => {
       if (data) {
         const { id: _id, ...rest } = data as Candle;
-        setForm(rest);
+        setForm({ ...rest, stock: rest.stock ?? 1 });
         setImagePreview(rest.image);
       }
     });
@@ -90,6 +91,9 @@ const CandleForm: React.FC = () => {
     setError('');
     setSaving(true);
     try {
+      if (!Number.isInteger(form.stock) || form.stock < 0 || form.stock > 2147483647) {
+        throw new Error('Available candles must be a whole number of zero or more.');
+      }
       const imageUrl = await uploadImage();
       const payload = { ...form, image: imageUrl };
 
@@ -193,6 +197,12 @@ const CandleForm: React.FC = () => {
             {label('Price ($)')}
             {input('price', 'number', { required: true, min: 0, step: 1 })}
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="candle-stock" className="block text-sm font-medium text-gray-700 mb-1">Available candles</label>
+          {input('stock', 'number', { id: 'candle-stock', required: true, min: 0, max: 2147483647, step: 1, 'aria-describedby': 'candle-stock-help' })}
+          <p id="candle-stock-help" className="text-xs text-gray-500 mt-1">How many candles are available for this scent. Set to 0 to mark it sold out.</p>
         </div>
 
         {/* Scent profile */}

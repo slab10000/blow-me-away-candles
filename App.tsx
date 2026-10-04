@@ -6,6 +6,13 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import CategoryPage from './components/CategoryPage';
 import FlameCursor from './components/FlameCursor';
+import { CartProvider } from './lib/CartContext';
+import StoreNav from './components/StoreNav';
+import CartPage from './components/CartPage';
+import CheckoutPage from './components/CheckoutPage';
+import OrderConfirmation from './components/OrderConfirmation';
+import { Outlet } from 'react-router-dom';
+
 const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 const HomePage: React.FC = () => {
@@ -19,21 +26,7 @@ const HomePage: React.FC = () => {
 
   return (
   <div className="min-h-screen bg-white">
-    <nav className="fixed top-0 w-full z-50 bg-[#829cc1] backdrop-blur-md border-b border-[#829cc1] shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="flex-shrink-0 flex items-center">
-            <span className="font-serif text-2xl font-bold text-gray-900 tracking-tighter">
-              Blow Me Away
-            </span>
-          </div>
-          <div className="hidden md:flex space-x-8">
-            <a href="#gallery" className="text-gray-900 hover:text-gold-600 px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors">Collection</a>
-            <a href="#contact" className="text-gray-900 hover:text-gold-600 px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors">Contact</a>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <StoreNav />
 
     <main>
       <Hero />
@@ -51,8 +44,13 @@ const App: React.FC = () => (
     <FlameCursor />
     <BrowserRouter>
       <Routes>
+        <Route element={<CartProvider><Outlet /></CartProvider>}>
         <Route path="/" element={<HomePage />} />
         <Route path="/category/:categoryName" element={<CategoryPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        </Route>
         <Route path="/admin/*" element={<Suspense fallback={<p role="status" className="p-8">Loading admin…</p>}><AdminApp /></Suspense>} />
       </Routes>
     </BrowserRouter>

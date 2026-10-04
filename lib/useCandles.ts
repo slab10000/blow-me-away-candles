@@ -48,13 +48,23 @@ export function useCandles({ includeScentPhotos = true } = {}) {
       }
     };
     void load();
+    const refreshWhenVisible = () => { if (document.visibilityState === 'visible') void load(); };
+    window.addEventListener('focus', refreshWhenVisible);
+    window.addEventListener('online', refreshWhenVisible);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
 
     const channel = supabase
       .channel(includeScentPhotos ? 'storefront-candles' : 'admin-candles')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'candles' }, load)
       .subscribe();
 
-    return () => { active = false; supabase.removeChannel(channel); };
+    return () => {
+      active = false;
+      window.removeEventListener('focus', refreshWhenVisible);
+      window.removeEventListener('online', refreshWhenVisible);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+      supabase.removeChannel(channel);
+    };
   }, [includeScentPhotos]);
 
   return { candles, loading, error };

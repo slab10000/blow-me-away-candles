@@ -54,6 +54,7 @@ const CandleList: React.FC = () => {
               <th className="text-left px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Artist</th>
               <th className="text-left px-4 py-3 font-medium text-gray-500 hidden lg:table-cell">Category</th>
               <th className="text-left px-4 py-3 font-medium text-gray-500">Price</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">Available</th>
               <th className="px-4 py-3 w-20"></th>
             </tr>
           </thead>
@@ -78,6 +79,11 @@ const CandleList: React.FC = () => {
                   </span>
                 </td>
                 <td className="px-4 py-3 font-semibold text-gray-900">${candle.price}</td>
+                <td className="px-4 py-3">
+                  <span className={`inline-block rounded-full px-2 py-1 text-xs font-medium whitespace-nowrap ${candle.stock > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    {candle.stock > 0 ? `${candle.stock} in stock` : 'Sold out'}
+                  </span>
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2 justify-end">
                     <Link

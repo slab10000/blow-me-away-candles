@@ -5,7 +5,8 @@ import { supabase } from '../lib/supabase';
 import { useCandles } from '../lib/useCandles';
 
 const CandleList: React.FC = () => {
-  const { candles, loading } = useCandles();
+  // Deleting a candle must never delete photos borrowed from a scent or product.
+  const { candles, loading } = useCandles({ includeScentPhotos: false });
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string, imageUrl: string) => {

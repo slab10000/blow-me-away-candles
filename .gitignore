@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Credentials stay local; the template is safe to commit.
+.env
+.env.*
+!.env.example
+.vercel
+.local-orders/

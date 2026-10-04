@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface Spark {
   id: number;
@@ -35,7 +34,7 @@ const FlameCursor: React.FC = () => {
 
   // Only activate on devices with a fine pointer (no touch-only)
   useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
     setHasPointer(mq.matches);
     const onChange = (e: MediaQueryListEvent) => setHasPointer(e.matches);
     mq.addEventListener('change', onChange);
@@ -46,8 +45,12 @@ const FlameCursor: React.FC = () => {
   useEffect(() => {
     if (!hasPointer) return;
 
+    const wake = () => { if (!rafRef.current) rafRef.current = requestAnimationFrame(animate); };
+
     const handleMove = (e: MouseEvent) => {
       targetPos.current = { x: e.clientX, y: e.clientY };
+
+      wake();
 
       // Check if cursor is inside a flame-zone
       const target = e.target as Element;
@@ -63,13 +66,16 @@ const FlameCursor: React.FC = () => {
     const handleLeave = () => {
       visible.current = false;
       inZone.current = false;
+      wake();
     };
 
     const handleEnter = () => {
       visible.current = true;
+      wake();
     };
 
     const animate = () => {
+      rafRef.current = 0;
       const t = targetPos.current;
       const s = smoothPos.current;
 
@@ -87,13 +93,11 @@ const FlameCursor: React.FC = () => {
       }
 
       if (glowRef.current) {
-        const glowAlpha = 0.09 * flameOpacity.current;
-        const darkAlpha = 0.015 * flameOpacity.current;
-        glowRef.current.style.background =
-          `radial-gradient(circle 280px at ${s.x}px ${s.y}px, rgba(255, 155, 50, ${glowAlpha}), rgba(0, 0, 0, ${darkAlpha}) 100%)`;
+        glowRef.current.style.transform = `translate(${s.x - 280}px, ${s.y - 280}px)`;
+        glowRef.current.style.opacity = String(flameOpacity.current);
       }
 
-      rafRef.current = requestAnimationFrame(animate);
+      if (Math.abs(s.x - t.x) > 0.1 || Math.abs(s.y - t.y) > 0.1 || Math.abs(flameOpacity.current - targetOpacity) > 0.002) wake();
     };
 
     document.documentElement.classList.add('flame-cursor-active');
@@ -147,8 +151,8 @@ const FlameCursor: React.FC = () => {
       {/* Warm glow that follows cursor — simulates light cast */}
       <div
         ref={glowRef}
-        className="fixed inset-0 pointer-events-none z-[9997]"
-        style={{ willChange: 'background' }}
+        className="fixed top-0 left-0 pointer-events-none z-[9997]"
+        style={{ width: 560, height: 560, opacity: 0, background: 'radial-gradient(circle, rgba(255,155,50,0.09), transparent 70%)', willChange: 'transform, opacity' }}
       />
 
       {/* Flame at cursor */}
@@ -172,42 +176,28 @@ const FlameCursor: React.FC = () => {
 
       {/* Click spark particles */}
       <div className="fixed inset-0 pointer-events-none z-[9998]">
-        <AnimatePresence>
           {sparks.map(s => {
             const dx = Math.cos(s.angle) * s.distance;
             const dy = Math.sin(s.angle) * s.distance;
 
             return (
-              <motion.div
+              <div
                 key={s.id}
-                initial={{
-                  x: s.x,
-                  y: s.y,
-                  scale: 1.2,
-                  opacity: 1,
-                }}
-                animate={{
-                  x: s.x + dx,
-                  y: s.y + dy - 15,
-                  scale: 0,
-                  opacity: 0,
-                }}
-                transition={{
-                  duration: s.duration,
-                  ease: 'easeOut',
-                }}
+                className="cursor-spark"
                 style={{
                   position: 'absolute',
+                  left: s.x, top: s.y,
+                  '--spark-x': `${dx}px`, '--spark-y': `${dy - 15}px`,
+                  animationDuration: `${s.duration}s`,
                   width: s.size,
                   height: s.size,
                   borderRadius: '50%',
                   backgroundColor: s.color,
                   boxShadow: `0 0 ${s.size + 3}px ${s.color}, 0 0 ${s.size + 8}px ${s.color}40`,
-                }}
+                } as React.CSSProperties}
               />
             );
           })}
-        </AnimatePresence>
       </div>
     </>
   );

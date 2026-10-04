@@ -4,16 +4,18 @@ import Hero from './components/Hero';
 import Gallery from './components/Gallery';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import CategoryPage from './components/CategoryPage';
 import FlameCursor from './components/FlameCursor';
 import { CartProvider } from './lib/CartContext';
 import StoreNav from './components/StoreNav';
-import CartPage from './components/CartPage';
-import CheckoutPage from './components/CheckoutPage';
-import OrderConfirmation from './components/OrderConfirmation';
 import { Outlet } from 'react-router-dom';
 
 const AdminApp = lazy(() => import('./admin/AdminApp'));
+const CategoryPage = lazy(() => import('./components/CategoryPage'));
+const CartPage = lazy(() => import('./components/CartPage'));
+const CheckoutPage = lazy(() => import('./components/CheckoutPage'));
+const OrderConfirmation = lazy(() => import('./components/OrderConfirmation'));
+
+const StoreLoading = () => <><StoreNav /><p role="status" className="pt-32 text-center text-gray-500">Loading…</p></>;
 
 const HomePage: React.FC = () => {
   React.useEffect(() => {
@@ -44,7 +46,7 @@ const App: React.FC = () => (
     <FlameCursor />
     <BrowserRouter>
       <Routes>
-        <Route element={<CartProvider><Outlet /></CartProvider>}>
+        <Route element={<CartProvider><Suspense fallback={<StoreLoading />}><Outlet /></Suspense></CartProvider>}>
         <Route path="/" element={<HomePage />} />
         <Route path="/category/:categoryName" element={<CategoryPage />} />
         <Route path="/cart" element={<CartPage />} />

@@ -11,7 +11,7 @@ const StoreNav: React.FC = () => {
       <div className="flex items-center gap-4 sm:gap-7">
         <a href="/#gallery" className="hidden md:block text-sm font-bold uppercase tracking-widest text-gray-900 hover:text-white">Collection</a>
         <a href="/#contact" className="hidden md:block text-sm font-bold uppercase tracking-widest text-gray-900 hover:text-white">Contact</a>
-        <Link to="/cart" aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`} className="flex items-center gap-2 rounded-full border border-gray-900/20 px-3 sm:px-4 py-2.5 text-gray-900 hover:bg-white/20 transition-colors">
+        <Link to="/cart" onMouseEnter={() => { void import('./CartPage').catch(() => {}); }} onFocus={() => { void import('./CartPage').catch(() => {}); }} aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`} className="flex items-center gap-2 rounded-full border border-gray-900/20 px-3 sm:px-4 py-2.5 text-gray-900 hover:bg-white/20 transition-colors">
           <ShoppingBag size={18} aria-hidden="true" /><span className="text-sm font-bold">Cart</span>
           <span className="min-w-5 h-5 px-1 rounded-full bg-gray-900 text-white text-xs inline-flex items-center justify-center">{count}</span>
         </Link>

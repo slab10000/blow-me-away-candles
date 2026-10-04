@@ -48,7 +48,7 @@ const CartPage: React.FC = () => {
           <div className="flex justify-between gap-2"><dt>Shipping</dt><dd className="text-gray-500">Calculated at checkout</dd></div>
         </dl>
         <div className="border-t border-gray-300/60 mt-6 pt-6 flex justify-between items-center"><span className="font-semibold">Subtotal</span><span className="text-2xl font-serif">{money(subtotalCents)}</span></div>
-        {unavailable ? <p role="alert" className="text-sm text-red-700 mt-5">Remove unavailable candles to continue.</p> : <Link to="/checkout" className={`${shopButton} w-full mt-6`}>Continue to checkout <ArrowRight size={16} /></Link>}
+        {unavailable ? <p role="alert" className="text-sm text-red-700 mt-5">Remove unavailable candles to continue.</p> : <Link to="/checkout" onMouseEnter={() => { void import('./CheckoutPage').catch(() => {}); }} onFocus={() => { void import('./CheckoutPage').catch(() => {}); }} className={`${shopButton} w-full mt-6`}>Continue to checkout <ArrowRight size={16} /></Link>}
         <p className="flex gap-2 text-xs leading-relaxed text-gray-500 mt-5"><Truck size={16} className="shrink-0 mt-0.5" />USPS shipping from Chicago. Choose your shipping service at checkout.</p>
         <p className="text-xs text-gray-500 mt-4">No payment collected yet. Taxes are not calculated.</p>
         {count >= MAX_ITEMS && <p role="status" className="text-xs mt-4">Maximum {MAX_ITEMS} candles per order.</p>}

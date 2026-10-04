@@ -13,8 +13,18 @@ The admin accepts JPG, PNG, and WebP files up to 20 MB. Before uploading it:
   prevent a newly saved photo from appearing.
 
 The encoder and its WASM assets load only for an admin upload. Store visitors do
-not download them. Admin screens are a separate JavaScript chunk. Product images
-load lazily; Spotify players mount when their cards approach the viewport.
+not download them. Admin, category, cart, and checkout screens use separate
+JavaScript chunks. Decorative flame animations use CSS, without a motion library.
+
+After the first page load gets idle time (with a bounded fallback for slow external
+resources and Safari), all product images warm at low fetch priority. Spotify
+players load eagerly in a background queue, three at a time. Nearby players get
+priority, but every player is queued without scrolling. A six-second slot timeout
+prevents a stalled embed from holding up the rest. Unmounting cancels pending jobs.
+This preloads player interfaces; Spotify still controls audio buffering and playback.
+Collection sections are visible immediately instead of waiting for scroll animations.
+Lato and Playfair Display are hosted as local WOFF2 assets with `font-display: swap`,
+so the first render no longer waits for Google's external font stylesheet.
 
 The hero uses a preloaded, high-priority 1,920 × 1,080 WebP. Original PNG files are
 retained as source assets but are not imported into the production bundle.

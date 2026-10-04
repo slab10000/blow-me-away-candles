@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Candle } from '../types';
 import SpotifyPreview from './SpotifyPreview';
 import { useCart } from '../lib/CartContext';
 import { money } from '../shared/commerce';
 import { availableStock, quantityLimit } from '../shared/inventory';
 import QuantitySelector from './QuantitySelector';
+import { afterPageReady } from '../lib/backgroundLoading';
 
 interface CandleCardProps {
   candle: Candle;
 }
 
 const CandleCard: React.FC<CandleCardProps> = ({ candle }) => {
+  const [warmPhoto, setWarmPhoto] = useState(false);
+  useEffect(() => afterPageReady(() => setWarmPhoto(true)), []);
   const { add, items, setQuantity, loading, catalogError } = useCart();
   const quantity = items.find(item => item.id === candle.id)?.quantity || 0;
   const stock = availableStock(candle);
@@ -24,7 +27,8 @@ const CandleCard: React.FC<CandleCardProps> = ({ candle }) => {
           alt={candle.scent}
           width={800}
           height={800}
-          loading="lazy"
+          loading={warmPhoto ? 'eager' : 'lazy'}
+          fetchPriority="low"
           decoding="async"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />

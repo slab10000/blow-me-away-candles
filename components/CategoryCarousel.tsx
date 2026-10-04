@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, useInView } from 'framer-motion';
 import CandleCard from './CandleCard';
 import { Candle, CategoryMeta } from '../types';
 
@@ -14,8 +13,6 @@ const SCROLL_AMOUNT = 320;
 
 const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ meta, candles }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: '-80px' });
 
   const scrollLeft = () => {
     scrollRef.current?.scrollBy({ left: -SCROLL_AMOUNT, behavior: 'smooth' });
@@ -26,12 +23,7 @@ const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ meta, candles }) =>
   };
 
   return (
-    <motion.section
-      ref={sectionRef}
-      initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-    >
+    <section>
       {/* Header row */}
       <div className="flex items-end justify-between mb-6 px-4 sm:px-6 lg:px-8">
         <div>
@@ -40,6 +32,8 @@ const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ meta, candles }) =>
         </div>
         <Link
           to={`/category/${meta.name.toLowerCase()}`}
+          onMouseEnter={() => { void import('./CategoryPage').catch(() => {}); }}
+          onFocus={() => { void import('./CategoryPage').catch(() => {}); }}
           onClick={() => sessionStorage.setItem('galleryScrollY', String(window.scrollY))}
           className="text-gold-600 hover:text-gold-800 font-bold uppercase tracking-widest text-sm transition-colors whitespace-nowrap ml-4"
         >
@@ -85,7 +79,7 @@ const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ meta, candles }) =>
           <ChevronRight size={20} />
         </button>
       </div>
-    </motion.section>
+    </section>
   );
 };
 

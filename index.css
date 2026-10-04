@@ -1,3 +1,5 @@
+@import './fonts/fonts.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -116,4 +118,45 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Decorative animations stay in CSS instead of loading a motion runtime. */
+.hero-flame-sway { animation: hero-sway 4s ease-in-out infinite alternate; }
+.hero-flame-glow { animation: hero-glow 1.8s ease-in-out infinite alternate; }
+.hero-flame-middle { animation: hero-flicker 2.8s ease-in-out infinite alternate; }
+.hero-flame-core { animation: hero-core 2.4s ease-in-out infinite alternate; }
+.cursor-spark { animation: cursor-spark ease-out both; }
+
+@keyframes hero-sway {
+  0%, 100% { transform: translateX(0) rotate(0) scale(1); }
+  20% { transform: translateX(-1.5px) rotate(-0.8deg) scale(1.01, 1.03); }
+  40% { transform: translateX(2px) rotate(1deg) scale(0.99, 0.98); }
+  60% { transform: translateX(-1px) rotate(-0.5deg) scale(1.005, 1.02); }
+  80% { transform: translateX(0.5px) rotate(0.4deg) scale(0.995, 0.99); }
+}
+@keyframes hero-glow {
+  0%, 100% { opacity: 0.85; }
+  20% { opacity: 1; }
+  40% { opacity: 0.9; }
+  60% { opacity: 0.95; }
+  80% { opacity: 0.88; }
+}
+@keyframes hero-flicker {
+  0%, 100% { transform: scale(1); }
+  25%, 75% { transform: scale(1.01, 1.03); }
+  50% { transform: scale(0.99, 0.98); }
+}
+@keyframes hero-core {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  25% { transform: translateX(-50%) scale(1.02, 1.05); }
+  50% { transform: translateX(-50%) scale(0.98, 0.97); }
+  75% { transform: translateX(-50%) scale(1.02, 1.03); }
+}
+@keyframes cursor-spark {
+  from { transform: translate(0, 0) scale(1.2); opacity: 1; }
+  to { transform: translate(var(--spark-x), var(--spark-y)) scale(0); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-flame-sway, .hero-flame-glow, .hero-flame-middle, .hero-flame-core { animation: none; }
+  .hero-flame-core { transform: translateX(-50%); }
 }

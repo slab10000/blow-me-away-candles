@@ -5,6 +5,7 @@ import { checkoutPlugin } from './server/viteCheckout';
 
 export default defineConfig(({ mode }) => ({
   worker: { format: 'es' },
+  build: { assetsInlineLimit: 0 },
   server: {
     port: 3000,
     host: '0.0.0.0',

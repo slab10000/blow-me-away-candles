@@ -130,24 +130,70 @@ including for three of the same candle. Change the measurements and weight after
 measuring the actual packed product. Consolidating candles into shared boxes
 requires updating the packing logic in `server/usps.ts` and `server/checkout.ts`.
 
-To enable live rates:
+To enable live rates (checked against USPS's official guide on October 4, 2026):
 
-1. Register an application through the [USPS developer portal](https://developers.usps.com/getting-started)
-   with access to Domestic Pricing.
-2. Set `USPS_CLIENT_ID` (Consumer Key) and `USPS_CLIENT_SECRET` (Consumer Secret)
-   in `.env.local`. These credentials must **never** have a `VITE_` prefix.
-3. Keep `USPS_ENVIRONMENT=production` for real rates, or use `test` for the USPS
-   test environment. Restart `npm run dev` after changing environment settings.
+1. Follow the [USPS getting-started guide](https://developers.usps.com/getting-started):
+   log in or create a USPS Business account through the
+   [Customer Onboarding Portal (COP)](https://cop.usps.com), then finish account setup.
+2. In COP, use **My Apps** to create/select the store's app. In its **Credentials**
+   section, retrieve the **Consumer Key** and **Consumer Secret**. Domestic Pricing
+   is listed in USPS's default API product; the app must have the `domestic-prices` scope.
+3. Set `USPS_CLIENT_ID` to the Consumer Key and `USPS_CLIENT_SECRET` to the Consumer
+   Secret in `.env.local`. These are app credentials, not your USPS login or an
+   old Web Tools user ID. Never prefix either with `VITE_` or commit the values.
+4. Keep `USPS_ENVIRONMENT=production` for live rates. For USPS's Testing Environment
+   for Mailers (TEM), set it to `test`; USPS says to use the **same production
+   credentials** with the `apis-tem.usps.com` host.
+5. Run `npm run usps:check -- 90210 --quantity 2` to test authentication and prices
+   from Chicago to a sample destination. The command prints per-package and total
+   shipping amounts without creating an order, buying postage, or logging secrets.
+6. Restart `npm run dev` after changing environment settings, then calculate
+   shipping in checkout with the customer's actual destination ZIP code.
+
+For a check without credentials or any network request:
+
+```sh
+npm run usps:check -- 90210 --quantity 2 --dry-run
+```
+
+This prints the exact non-secret payload used by checkout and names missing
+credential fields. A dry run does **not** confirm USPS authentication or prices.
+For deployment, configure the same server-only values in Vercel as well.
 
 The integration uses [USPS OAuth v3](https://developers.usps.com/Oauth) and
 [Domestic Prices v3](https://developers.usps.com/domesticpricesv3), specifically
 `POST /prices/v3/total-rates/search`. It requests retail rates for the configured
-box and excludes flat-rate packaging and destination-entry discounts. Tokens are
+box and excludes flat-rate packaging and destination-entry discounts. OAuth uses
+`client_credentials` with scope `domestic-prices` (verified against the live API;
+`prices` is the URL path, not a valid OAuth scope). The price request uses `mailClasses`
+for Ground Advantage and Priority Mail, weight in pounds, dimensions in inches,
+and `extraServices: [920]` (USPS Tracking), as recommended in the current schema
+for these services. This avoids requesting every optional extra service. The
+returned `totalPrice` is used when present; otherwise `totalBasePrice` already
+includes applicable base fees. Fees must not be added a second time.
+
+The flow is: customer's ZIP → our server → OAuth token → USPS price request →
+eligible service prices → selected shipping added to the cart subtotal. Tokens are
 cached until expiry and rates for five minutes. A missing credential, unavailable
 service, or failed request shows an actionable error and prevents order submission;
 there are no invented or zero-dollar fallback shipping rates. USPS receives ZIP
 codes and package dimensions/weight, not the customer's name, email, or street
 address. Address format is checked, but USPS address validation is not included.
+
+The API reports **retail** postage, matching the current store configuration.
+Commercial or contract rates should only be introduced when the store's postage
+purchasing method supports those rates. Package measurements affect both actual
+and dimensional weight, so replace the temporary 12-inch/4-lb values before sales.
+The app's API quota is set by its USPS API product; check that product rather than
+assuming a universal quota. Quota increases go through
+[USPS API Support](https://emailus.usps.com/s/usps-APIs).
+
+Connection-check errors distinguish `USPS_AUTH` (OAuth request rejected),
+`USPS_ACCESS_DENIED` (pricing access missing), `USPS_RATE_REQUEST` (shipment request
+rejected), and `USPS_BUSY` (quota exceeded). Only a 401 on the price request triggers
+one token refresh. Invalid credentials and permission errors are not retried.
+USPS's separate label-purchasing enrollment and payment-account flow is not used
+by this rate-only integration.
 
 Prices are fetched from the catalog on the server. Signed quotes bind the price,
 cart, and delivery details for 15 minutes; changes require recalculating shipping.

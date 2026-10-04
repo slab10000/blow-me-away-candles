@@ -8,6 +8,7 @@
     "build": "vite build",
     "test": "node --test server/*.test.ts",
     "typecheck": "tsc --noEmit",
+    "usps:check": "node scripts/check-usps.ts",
     "preview": "vite preview"
   },
   "dependencies": {

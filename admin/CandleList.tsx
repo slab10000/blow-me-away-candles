@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit2, Trash2, Plus } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useCandles } from '../lib/useCandles';
+import { invalidateCandles, useCandles } from '../lib/useCandles';
 
 const CandleList: React.FC = () => {
   // Deleting a candle must never delete photos borrowed from a scent or product.
-  const { candles, loading } = useCandles({ includeScentPhotos: false });
+  const { candles, loading, error } = useCandles({ includeScentPhotos: false });
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string, imageUrl: string) => {
@@ -20,6 +20,7 @@ const CandleList: React.FC = () => {
     }
 
     await supabase.from('candles').delete().eq('id', id);
+    invalidateCandles();
     setDeleting(null);
   };
 
@@ -28,6 +29,8 @@ const CandleList: React.FC = () => {
       <div className="p-8 text-gray-400 text-sm">Loading candles…</div>
     );
   }
+
+  if (error) return <div role="alert" className="p-8 text-red-600 text-sm">{error} Refresh to try again.</div>;
 
   return (
     <div className="p-8">

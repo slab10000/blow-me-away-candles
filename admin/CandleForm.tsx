@@ -4,6 +4,8 @@ import { Upload, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Candle, ScentCategory } from '../types';
 import { prepareCandleImage } from '../lib/imageUpload';
+import { CANDLE_FIELDS, requireCandleStock } from '../shared/candleCatalog';
+import { invalidateCandles } from '../lib/useCandles';
 
 const CATEGORIES: ScentCategory[] = ['Fresh', 'Warm', 'Floral', 'Earthy'];
 
@@ -32,6 +34,7 @@ const CandleForm: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [loaded, setLoaded] = useState(!isEdit);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -42,14 +45,26 @@ const CandleForm: React.FC = () => {
   }, [imageFile]);
 
   useEffect(() => {
-    if (!isEdit) return;
-    supabase.from('candles').select('*').eq('id', id!).single().then(({ data }) => {
-      if (data) {
-        const { id: _id, ...rest } = data as Candle;
-        setForm({ ...rest, stock: rest.stock ?? 1 });
+    let active = true;
+    setError('');
+    setLoaded(!isEdit);
+    if (!isEdit) { setForm(empty()); setImagePreview(''); return; }
+    const load = async () => {
+      try {
+        const { data, error } = await supabase.from('candles').select(CANDLE_FIELDS).eq('id', id!)
+          .abortSignal(AbortSignal.timeout(10000)).single();
+        if (error) throw error;
+        const { id: _id, ...rest } = requireCandleStock(data as Candle);
+        if (!active) return;
+        setForm(rest);
         setImagePreview(rest.image);
+        setLoaded(true);
+      } catch {
+        if (active) setError('This candle and its availability could not be loaded. Please refresh and try again.');
       }
-    });
+    };
+    void load();
+    return () => { active = false; };
   }, [id, isEdit]);
 
   const set = <K extends keyof typeof form>(key: K, val: typeof form[K]) =>
@@ -88,6 +103,7 @@ const CandleForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!loaded) return;
     setError('');
     setSaving(true);
     try {
@@ -106,6 +122,7 @@ const CandleForm: React.FC = () => {
         if (error) throw error;
       }
 
+      invalidateCandles();
       navigate('/admin/candles');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
@@ -130,6 +147,11 @@ const CandleForm: React.FC = () => {
       {...extra}
     />
   );
+
+  if (!loaded) return <div className="p-8 max-w-2xl">
+    <p role={error ? 'alert' : 'status'} className={error ? 'text-red-600 text-sm' : 'text-gray-500 text-sm'}>{error || 'Loading candle…'}</p>
+    {error && <button type="button" onClick={() => navigate('/admin/candles')} className="mt-4 text-sm underline">Back to candles</button>}
+  </div>;
 
   return (
     <div className="p-8 max-w-2xl">

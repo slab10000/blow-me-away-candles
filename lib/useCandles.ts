@@ -1,11 +1,33 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 import { Candle } from '../types';
-import { loadCandleImages } from '../shared/catalogImages';
+import { loadScentImages, resolveCandleImages } from '../shared/catalogImages';
+
+// Keep navigation instant, refresh on every mount, and share concurrent requests.
+// Admin rows stay separate so borrowed photos never enter the deletion workflow.
+const snapshots = new Map<boolean, Candle[]>();
+const requests = new Map<boolean, Promise<Candle[]>>();
+
+function fetchCatalog(includeScentPhotos: boolean): Promise<Candle[]> {
+  const pending = requests.get(includeScentPhotos);
+  if (pending) return pending;
+  const request = Promise.all([
+    supabase.from('candles').select('*').order('created_at', { ascending: true }),
+    includeScentPhotos ? loadScentImages(supabase) : Promise.resolve([]),
+  ]).then(([{ data, error }, scents]) => {
+    if (error) throw error;
+    const rows = (data || []) as Candle[];
+    const catalog = includeScentPhotos ? resolveCandleImages(rows, scents) : rows;
+    snapshots.set(includeScentPhotos, catalog);
+    return catalog;
+  }).finally(() => { requests.delete(includeScentPhotos); });
+  requests.set(includeScentPhotos, request);
+  return request;
+}
 
 export function useCandles({ includeScentPhotos = true } = {}) {
-  const [candles, setCandles] = useState<Candle[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [candles, setCandles] = useState<Candle[]>(() => snapshots.get(includeScentPhotos) || []);
+  const [loading, setLoading] = useState(() => !snapshots.has(includeScentPhotos));
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -14,11 +36,7 @@ export function useCandles({ includeScentPhotos = true } = {}) {
     const load = async () => {
       const request = ++latestRequest;
       try {
-        const { data, error } = await supabase.from('candles').select('*')
-          .order('created_at', { ascending: true });
-        if (error) throw error;
-        const rows = (data || []) as Candle[];
-        const catalog = includeScentPhotos ? await loadCandleImages(supabase, rows) : rows;
+        const catalog = await fetchCatalog(includeScentPhotos);
         if (active && request === latestRequest) {
           setCandles(catalog);
           setError('');

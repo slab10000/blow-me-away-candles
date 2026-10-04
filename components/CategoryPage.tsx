@@ -10,8 +10,8 @@ import Footer from './Footer';
 const CategoryPage: React.FC = () => {
   const { categoryName } = useParams<{ categoryName: string }>();
   const navigate = useNavigate();
-  const { candles } = useCandles();
-  const { categoryMeta } = useCategoryMeta();
+  const { candles, loading: catalogLoading } = useCandles();
+  const { categoryMeta, loading: categoriesLoading } = useCategoryMeta();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -24,6 +24,8 @@ const CategoryPage: React.FC = () => {
 
   const meta = categoryMeta.find(m => m.name === normalizedName);
   const filtered = candles.filter(c => c.category === normalizedName);
+
+  if (categoriesLoading || catalogLoading) return <p role="status" className="pt-32 text-center text-gray-500">Loading the collection…</p>;
 
   if (!meta) {
     return (

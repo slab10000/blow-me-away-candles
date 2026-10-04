@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
-import heroBg from '@/Images/hero_section_bg.png';
-import heroLitBg from '@/Images/hero_section_lit_bg.png';
+import heroBg from '@/Images/hero_section_bg.webp';
+import heroLitBg from '@/Images/hero_section_lit_bg.webp';
 import Flame from './Flame';
 
 /** Flame position/size as % of background image (0–100). Tune to match the candle in your image. */
@@ -79,6 +79,10 @@ const Hero: React.FC = () => {
           ref={imageRef}
           src={isLit ? heroLitBg : heroBg}
           alt="Candles Background"
+          width={1920}
+          height={1080}
+          fetchPriority="high"
+          decoding="async"
           className="w-full h-full object-cover transition-opacity duration-500"
           onLoad={() => setImageLoaded(true)}
         />

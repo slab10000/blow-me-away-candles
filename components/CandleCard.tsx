@@ -1,5 +1,6 @@
 import React from 'react';
 import { Candle } from '../types';
+import SpotifyPreview from './SpotifyPreview';
 
 interface CandleCardProps {
   candle: Candle;
@@ -13,21 +14,16 @@ const CandleCard: React.FC<CandleCardProps> = ({ candle }) => {
         <img
           src={candle.image}
           alt={candle.scent}
+          width={800}
+          height={800}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
       </div>
 
       {/* Spotify Embed */}
-      <iframe
-        src={`https://open.spotify.com/embed/track/${candle.spotifyTrackId}?utm_source=generator`}
-        width="100%"
-        height="80"
-        frameBorder={0}
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-        title={`${candle.name} by ${candle.artist}`}
-        className="flex-none"
-      />
+      <SpotifyPreview trackId={candle.spotifyTrackId} title={`${candle.name} by ${candle.artist}`} />
 
       {/* Content */}
       <div className="p-6 flex flex-col flex-1">

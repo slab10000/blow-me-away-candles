@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Upload, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Candle, ScentCategory } from '../types';
+import { prepareCandleImage } from '../lib/imageUpload';
 
 const CATEGORIES: ScentCategory[] = ['Fresh', 'Warm', 'Floral', 'Earthy'];
 
@@ -33,6 +34,13 @@ const CandleForm: React.FC = () => {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!imageFile) return;
+    const preview = URL.createObjectURL(imageFile);
+    setImagePreview(preview);
+    return () => URL.revokeObjectURL(preview);
+  }, [imageFile]);
+
+  useEffect(() => {
     if (!isEdit) return;
     supabase.from('candles').select('*').eq('id', id!).single().then(({ data }) => {
       if (data) {
@@ -60,20 +68,21 @@ const CandleForm: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setError('');
     setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
   };
 
   const uploadImage = async (): Promise<string> => {
     if (!imageFile) return form.image;
     setUploading(true);
-    const ext = imageFile.name.split('.').pop();
-    const path = `${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('candle-images').upload(path, imageFile, { upsert: true });
-    setUploading(false);
-    if (error) throw new Error(error.message);
-    const { data } = supabase.storage.from('candle-images').getPublicUrl(path);
-    return data.publicUrl;
+    try {
+      const optimized = await prepareCandleImage(imageFile);
+      const { error } = await supabase.storage.from('candle-images').upload(optimized.name, optimized, {
+        contentType: 'image/webp', cacheControl: '31536000', upsert: false,
+      });
+      if (error) throw new Error(error.message);
+      return supabase.storage.from('candle-images').getPublicUrl(optimized.name).data.publicUrl;
+    } finally { setUploading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -231,7 +240,7 @@ const CandleForm: React.FC = () => {
         <div>
           {label('Image')}
           <div
-            onClick={() => fileRef.current?.click()}
+            onClick={() => { if (!saving) fileRef.current?.click(); }}
             className="relative border-2 border-dashed border-gray-200 rounded-xl p-6 cursor-pointer hover:border-amber-400 transition-colors text-center"
           >
             {imagePreview ? (
@@ -250,15 +259,18 @@ const CandleForm: React.FC = () => {
             <input
               ref={fileRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={saving}
               onChange={handleFileChange}
               className="hidden"
             />
           </div>
+          <p className="mt-2 text-xs text-gray-500">JPG, PNG, or WebP, up to 20 MB. Photos are resized and compressed automatically.</p>
           {imagePreview && (
             <button
               type="button"
-              onClick={() => { setImageFile(null); setImagePreview(''); set('image', ''); }}
+              disabled={saving}
+              onClick={() => { setImageFile(null); setImagePreview(''); set('image', ''); if (fileRef.current) fileRef.current.value = ''; }}
               className="mt-2 text-xs text-red-400 hover:text-red-600"
             >
               Remove image
@@ -275,7 +287,7 @@ const CandleForm: React.FC = () => {
             disabled={saving || uploading}
             className="bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold px-6 py-2 rounded-lg text-sm transition-colors"
           >
-            {saving || uploading ? 'Saving…' : isEdit ? 'Save changes' : 'Add candle'}
+            {uploading ? 'Preparing and uploading photo…' : saving ? 'Saving…' : isEdit ? 'Save changes' : 'Add candle'}
           </button>
           <button
             type="button"

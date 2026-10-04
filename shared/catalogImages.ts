@@ -33,15 +33,20 @@ export function resolveCandleImages<T extends CandleImage>(candles: T[], scents:
 export async function loadCandleImages<T extends CandleImage>(db: SupabaseClient, candles: T[]): Promise<T[]> {
   const scentIds = candles.filter(candle => !isPhoto(candle.image)).map(candle => `s${candle.id}`);
   if (!scentIds.length) return candles;
-  const { data, error } = await db.from('scents')
+  return resolveCandleImages(candles, await loadScentImages(db, scentIds));
+}
+
+export async function loadScentImages(db: SupabaseClient, scentIds?: string[]): Promise<ScentImages[]> {
+  let query = db.from('scents')
     .select('id,heroImage,products(images)')
-    .in('id', scentIds)
     .order('created_at', { referencedTable: 'products', ascending: true })
     .abortSignal(AbortSignal.timeout(10000));
+  if (scentIds) query = query.in('id', scentIds);
+  const { data, error } = await query;
   // Photo availability must not prevent the collection or checkout from loading.
   if (error) {
     console.warn('Catalog photos could not be loaded; using the saved candle images.');
-    return candles;
+    return [];
   }
-  return resolveCandleImages(candles, (data || []) as ScentImages[]);
+  return (data || []) as ScentImages[];
 }

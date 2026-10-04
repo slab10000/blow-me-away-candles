@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Hero from './components/Hero';
 import Gallery from './components/Gallery';
@@ -6,7 +6,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import CategoryPage from './components/CategoryPage';
 import FlameCursor from './components/FlameCursor';
-import AdminApp from './admin/AdminApp';
+const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 const HomePage: React.FC = () => {
   React.useEffect(() => {
@@ -53,7 +53,7 @@ const App: React.FC = () => (
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/category/:categoryName" element={<CategoryPage />} />
-        <Route path="/admin/*" element={<AdminApp />} />
+        <Route path="/admin/*" element={<Suspense fallback={<p role="status" className="p-8">Loading admin…</p>}><AdminApp /></Suspense>} />
       </Routes>
     </BrowserRouter>
   </>

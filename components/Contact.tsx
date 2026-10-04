@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import emailjs from '@emailjs/browser';
 import { Mail, Instagram } from 'lucide-react';
 
 const Contact: React.FC = () => {
@@ -15,6 +14,7 @@ const Contact: React.FC = () => {
     setStatus('sending');
 
     try {
+      const { default: emailjs } = await import('@emailjs/browser');
       await emailjs.send(
         'service_sd8u95p',
         'template_70j8k9s',

@@ -18,6 +18,8 @@ load lazily; Spotify players mount when their cards approach the viewport.
 
 The hero uses a preloaded, high-priority 1,920 × 1,080 WebP. Original PNG files are
 retained as source assets but are not imported into the production bundle.
+Vercel gives fingerprinted files under `/assets/` a one-year immutable cache
+lifetime. New builds change filenames; the HTML entry point remains revalidated.
 
 Catalog rows and photo references load concurrently. In-memory snapshots keep
 navigation from clearing an already-loaded collection; mounted views revalidate
